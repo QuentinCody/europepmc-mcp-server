@@ -1,20 +1,24 @@
+import { grantEndpoints, grantWorkflows } from "./grants";
 import type { ApiCatalog } from "@bio-mcp/shared/codemode/catalog";
 
 export const europePmcCatalog: ApiCatalog = {
     name: "Europe PMC",
     baseUrl: "https://www.ebi.ac.uk/europepmc/webservices/rest",
-    version: "v1",
+    version: "Articles + Annotations + Grist",
     auth: "none",
-    endpointCount: 7,
+    endpointCount: 9,
+    workflows: grantWorkflows,
     notes:
-        "- Europe PMC: 45M+ biomedical abstracts + OA full text + text-mined annotations. Two upstreams in one isolate: Articles API (default) and the Annotations API (paths under /annotations/...).\n" +
-        "- Pagination is cursorMark, NOT page: start cursorMark='*', then pass the response's nextCursorMark. The 'page' param is silently ignored. pageSize default 25, max 1000.\n" +
+        "- Europe PMC: biomedical literature, full text, annotations and grant records. Articles API (default), Annotations (/annotations/) and Grist (/grants/search) are separate upstreams. /grants/publications uses Articles core search.\n" +
+        "- Articles /search pagination uses cursorMark, NOT page: start cursorMark='*', then pass the response's nextCursorMark. The 'page' param is silently ignored. pageSize default 25, max 1000.\n" +
+        "- Grist uses page numbers (25 grants per page), not Articles cursors. Preserve funder/award pairs; grant identifiers are not globally unique.\n" +
         "- format=json is injected automatically; you do not need to pass it.\n" +
         "- resultType on /search: 'idlist' (IDs only), 'lite' (default-ish, key fields), 'core' (full metadata incl. the per-article 'license' field, abstract, full-text URLs).\n" +
         "- Full text is XML ONLY (no JSON): GET /{PMCID}/fullTextXML (bare ID, e.g. /PMC4302049/fullTextXML). It is returned as { format:'xml', content } and auto-staged (large).\n" +
         "- Metadata/abstracts are open + commercial-OK; per-article FULL-TEXT licenses are MIXED (CC-BY vs CC-BY-NC/-ND) — check the 'license' field (resultType=core) before caching/redistributing full text.\n" +
         "- Content paths take a bare prefixed ID; metadata/link paths use /{source}/{id}/... where source is MED|PMC|PPR|PAT|AGR|CBA. Rate ~10 req/s per IP (shared egress) — keep concurrency low.",
     endpoints: [
+        ...grantEndpoints,
         {
             method: "GET",
             path: "/search",

@@ -1,3 +1,4 @@
+import { europePmcResponse } from "../lib/tool-result";
 import type { McpServer } from "@bio-mcp/shared/mcp";
 import { z } from "zod";
 import { createGetSchemaHandler } from "@bio-mcp/shared/staging/utils";
@@ -14,8 +15,9 @@ interface ExtraWithEnvAndSession {
 export function registerGetSchema(server: McpServer, env?: Partial<Env>): void {
     const handler = createGetSchemaHandler("EUROPEPMC_DATA_DO", "europepmc");
 
+  for (const name of ["europepmc_get_schema", "mcp_europepmc_get_schema"]) {
     server.registerTool(
-        "europepmc_get_schema",
+        name,
         {
             title: "Get Staged Data Schema",
             description:
@@ -33,7 +35,8 @@ export function registerGetSchema(server: McpServer, env?: Partial<Env>): void {
             const handlerArgs: Record<string, unknown> = {
                 data_access_id: args.data_access_id,
             };
-            return handler(handlerArgs, runtimeEnv, extra as Record<string, unknown>);
+            return europePmcResponse(() => handler(handlerArgs, runtimeEnv, extra as Record<string, unknown>), runtimeEnv, name, extra, args);
         },
     );
+  }
 }

@@ -1,0 +1,75 @@
+{
+  "grist-core": {
+    "source_url": "https://www.ebi.ac.uk/europepmc/GristAPI/rest/get/query=ga%3A%22Wellcome%20Trust%22%20gid%3A%22081052%22&resultType=core&page=1&format=json",
+    "captured_at": "2026-10-03",
+    "response": {
+      "HitCount": "1",
+      "Request": {
+        "Query": "ga:\"Wellcome Trust\" gid:\"081052\"",
+        "ResultType": "Core",
+        "Page": "1"
+      },
+      "RecordList": {
+        "Record": {
+          "Person": {
+            "FamilyName": "Osrin",
+            "GivenName": "David",
+            "Initials": "D",
+            "Title": "Prof",
+            "Alias": [
+              {
+                "value": "-12293",
+                "Source": "MRC"
+              },
+              {
+                "value": "0000-0001-9691-9684",
+                "Source": "ORCID"
+              },
+              {
+                "value": "4050095C-4F69-4DF1-ADE1-A4DF00B7EE7B",
+                "Source": "Wellcome Trust"
+              }
+            ]
+          },
+          "Grant": {
+            "Funder": {
+              "Name": "Wellcome Trust",
+              "pubMedSearchTerm": "Wellcome Trust",
+              "FundRefID": "https://doi.org/10.13039/100010269"
+            },
+            "Id": "081052",
+            "Doi": "10.35802/081052",
+            "Alias": "081052",
+            "Title": "Cluster randomised controlled trial of the effect of community mobilisation on neonatal survival in Mumbai slums.",
+            "Type": "Research Career Development Fellowship",
+            "Stream": "Population and Public Health",
+            "StartDate": "2007-02-01",
+            "EndDate": "2011-01-31",
+            "Amount": {
+              "value": 648257.0,
+              "Currency": "GBP"
+            }
+          },
+          "Institution": {
+            "Name": "University College London",
+            "RORID": "02jx3x895",
+            "RorOfficialName": "University College London"
+          }
+        }
+      }
+    }
+  },
+  "grist-empty": {
+    "source_url": "https://www.ebi.ac.uk/europepmc/GristAPI/rest/get/query=gid%3Acodex_nonexistent_989712&resultType=core&page=1&format=json",
+    "captured_at": "2026-10-03",
+    "response": {
+      "HitCount": "0",
+      "Request": {
+        "Query": "gid:codex_nonexistent_989712",
+        "ResultType": "Core",
+        "Page": "1"
+      },
+      "RecordList": {}
+    }
+  }
+}

@@ -1,3 +1,4 @@
+import { europePmcResponse } from "../lib/tool-result";
 import type { McpServer } from "@bio-mcp/shared/mcp";
 import { z } from "zod";
 import { createQueryDataHandler } from "@bio-mcp/shared/staging/utils";
@@ -15,8 +16,9 @@ interface ExtraWithEnv {
 export function registerQueryData(server: McpServer, env?: Partial<Env>): void {
     const handler = createQueryDataHandler("EUROPEPMC_DATA_DO", "europepmc");
 
+  for (const name of ["europepmc_query_data", "mcp_europepmc_query_data"]) {
     server.registerTool(
-        "europepmc_query_data",
+        name,
         {
             title: "Query Staged Europe PMC Data",
             description:
@@ -24,7 +26,7 @@ export function registerQueryData(server: McpServer, env?: Partial<Env>): void {
             inputSchema: {
                 data_access_id: z.string().min(1).describe("Data access ID for the staged dataset"),
                 sql: z.string().min(1).describe("SQL query to execute against the staged data"),
-                limit: z.number().int().positive().max(10000).default(100).optional().describe("Maximum number of rows to return (default: 100)"),
+                limit: z.number().int().positive().max(10000).optional().describe("Maximum number of rows to return (default: 100)"),
             },
         },
         async (args: QueryDataArgs, extra) => {
@@ -34,7 +36,8 @@ export function registerQueryData(server: McpServer, env?: Partial<Env>): void {
                 sql: args.sql,
                 limit: args.limit,
             };
-            return handler(handlerArgs, runtimeEnv);
+            return europePmcResponse(() => handler(handlerArgs, runtimeEnv), runtimeEnv, name, extra, args);
         },
     );
+  }
 }
