@@ -6,6 +6,26 @@ import { ARTICLES_BASE, ANNOTATIONS_BASE, epmcFetch } from "./http";
 /** Full-text endpoints return XML only (no JSON variant). */
 const XML_ENDPOINT = /\/(fullTextXML|bookXML)$/;
 
+/** The path with its percent-escapes decoded, as the upstream decodes them; an invalid escape stays. */
+function decodedPath(path: string): string {
+    try {
+        return decodeURIComponent(path);
+    } catch {
+        return path;
+    }
+}
+
+/**
+ * True for a path that the upstream resolves to a full-text route: after it
+ * decodes the escapes, and with no query or fragment and with the dot segments,
+ * backslashes and tabs that the URL parser changes. Case and a final slash are
+ * ignored, so the match can only refuse more.
+ */
+function isFullTextPath(path: string): boolean {
+    const resolved = new URL(`https://upstream.invalid/${decodedPath(path).replace(/^[/\\]+/, "")}`).pathname;
+    return /\/(?:fullTextXML|bookXML)\/?$/i.test(resolved);
+}
+
 /**
  * Create an ApiFetchFn for Europe PMC, routing across two upstream bases:
  *   - /annotations/...  → Annotations API (the "/annotations" prefix is stripped)
@@ -23,7 +43,7 @@ export function createEuropePmcApiFetch(): ApiFetchFn {
         // License audit 2026-11-10: metadata is open. About 29% of the open-access
         // full text carries a non-commercial license, and this route does not
         // filter by license.
-        if (request.licenseProfile === "commercial" && XML_ENDPOINT.test(request.path)) {
+        if (request.licenseProfile === "commercial" && isFullTextPath(request.path)) {
             return commercialUseRefusal("Article full text (fullTextXML, bookXML)", "part of the open-access subset carries a non-commercial license; search and metadata stay available");
         }
         if (request.method.toUpperCase() !== "GET" || request.body !== undefined) fail("Europe PMC routes require GET without a body", 405);
